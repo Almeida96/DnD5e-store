@@ -1,3 +1,5 @@
+#Projeto desenvolvido por Igor Almeida, qualquer modificação sem autorização terá implicações legais
+
 import tkinter as tk
 from tkinter import ttk
 import sqlite3
@@ -174,20 +176,27 @@ def generate_inventory(store_type):
 
     _, mundane_min, mundane_max, common_min, common_max, uncommon_min, uncommon_max, rare_min, rare_max, very_rare_min, very_rare_max, legendary_min, legendary_max = store_info
 
-    cursor.execute('SELECT * FROM common_items')
-    common_items = cursor.fetchall()
+    if store_type == "Potion Store":
+        common_items = get_potion_items(conn, "common_items")
+        uncommon_items = get_potion_items(conn, "uncommon_items")
+        rare_items = get_potion_items(conn, "rare_items")
+        very_rare_items = get_potion_items(conn, "very_rare_items")
+        legendary_items = get_potion_items(conn, "legendary_items")
+    else:
+        cursor.execute('SELECT * FROM common_items')
+        common_items = cursor.fetchall()
 
-    cursor.execute('SELECT * FROM uncommon_items')
-    uncommon_items = cursor.fetchall()
+        cursor.execute('SELECT * FROM uncommon_items')
+        uncommon_items = cursor.fetchall()
 
-    cursor.execute('SELECT * FROM rare_items')
-    rare_items = cursor.fetchall()
+        cursor.execute('SELECT * FROM rare_items')
+        rare_items = cursor.fetchall()
 
-    cursor.execute('SELECT * FROM very_rare_items')
-    very_rare_items = cursor.fetchall()
+        cursor.execute('SELECT * FROM very_rare_items')  # Adicione esta linha
+        very_rare_items = cursor.fetchall()  # Adicione esta linha
 
-    cursor.execute('SELECT * FROM legendary_items')
-    legendary_items = cursor.fetchall()
+        cursor.execute('SELECT * FROM legendary_items')
+        legendary_items = cursor.fetchall()
 
     inventory = {
         "common": random.sample(common_items, random.randint(common_min, common_max)),
@@ -213,6 +222,11 @@ def generate_inventory(store_type):
             text_area.insert(tk.END, f"{item[1]}\n")
         text_area.insert(tk.END, "\n")
     return inventory
+
+def get_potion_items(conn, table_name):
+    cursor = conn.cursor()
+    cursor.execute(f'SELECT * FROM {table_name} WHERE name LIKE "%Potion%"')
+    return cursor.fetchall()
 
 
 # Banco de dados
@@ -249,33 +263,220 @@ common_items = [
 ]
 
 uncommon_items = [
-    "Adamantine Armor", "Alchemy Jug", "All-Purpose Tool", "Ammunition +1, +2, or +3",
-    "Amulet of Proof against Detection and Location", "Amulet of the Devout", "Arcane Grimoire", "Bag of Holding",
-    "Bag of Tricks", "Barrier Tattoo", "Bloodwell Vial", "Boots of Elvenkind",
-    "Boots of Striding and Springing", "Boots of the Winterlands", "Bracers of Archery", "Brooch of Shielding",
-    "Broom of Flying", "Cap of Water Breathing", "Circlet of Blasting", "Cloak of Elvenkind",
-    "Cloak of Protection", "Cloak of the Manta Ray", "Coiling Grasp Tattoo", "Decanter of Endless Water",
-    "Deck of Illusions", "Dragonhide Belt +1, +2, or +3", "Driftglobe", "Dust of Disappearance",
-    "Dust of Dryness", "Dust of Sneezing and Choking", "Eldritch Claw Tattoo", "Elemental Gem",
-    "Emerald Pen", "Eversmoking Bottle", "Eyes of Charming", "Eyes of Minute Seeing",
-    "Eyes of the Eagle", "Feywild Shard", "Figurine of Wondrous Power", "Gauntlets of Ogre Power",
-    "Gem of Brightness", "Gloves of Missile Snaring", "Gloves of Swimming and Climbing", "Gloves of Thievery",
-    "Goggles of Night", "Guardian Emblem", "Hat of Disguise", "Headband of Intellect",
-    "Helm of Comprehending Languages", "Helm of Telepathy", "Immovable Rod", "Instrument of the Bards",
-    "Javelin of Lightning", "Keoghtom's Ointment", "Lantern of Revealing", "Mariner's Armor",
-    "Medallion of Thoughts", "Mithral Armor", "Moon Sickle", "Nature's Mantle",
-    "Necklace of Adaptation", "Oil of Slipperiness", "Pearl of Power", "Periapt of Health",
-    "Periapt of Wound Closure", "Philter of Love", "Pipes of Haunting", "Pipes of the Sewers",
-    "Potion of Animal Friendship", "Potion of Fire Breath", "Potion of Giant Strength", "Potion of Growth",
-    "Potion of Healing", "Potion of Poison", "Potion of Resistance", "Potion of Water Breathing",
-    "Psi Crystal", "Quiver of Ehlonna", "Rhythm-Maker's Drum", "Ring of Jumping",
-    "Ring of Mind Shielding", "Ring of Swimming", "Ring of Warmth", "Ring of Water Walking",
-    "Robe of Useful Items", "Rod of the Pact Keeper", "Rope of Climbing", "Saddle of the Cavalier",
-    "Sending Stones", "Sentinel Shield", "Shield, +1, +2, or +3", "Slippers of Spider Climbing",
-    "Spell Scroll", "Spellwrought Tattoo", "Staff of the Adder", "Staff of the Python",
-    "Stone of Good Luck (Luckstone)", "Sword of Vengeance", "Trident of Fish Command", "Wand of Magic Detection",
-    "Wand of Magic Missiles", "Wand of Secrets", "Wand of the War Mage +1, +2, or +3", "Wand of Web",
-    "Weapon +1, +2, or +3", "Weapon of Warning", "Wind Fan", "Winged Boots"
+    "Adamantine Chain shirt - Armor - 550 gp",
+    "Adamantine Armor - 700 gp",
+    "Alchemy Jug - Wondrous - 6000 gp",
+    "Ammunition +1",
+    "Amulet of Proof Against Detection and Location - Wondrous - 20.000 gp",
+    "Amulet of the Devout",
+    "Amulet of the Drunkard",
+    "Arcane Grimoire",
+    "Bag of Bounty",
+    "Bag of Holding - Wondrous - 4.000 gp",
+    "Bag of Tricks",
+    "Balance of Harmony",
+    "Ballon Pack",
+    "Barrier Tattoo",
+    "Blood of the Lycanthrope Antidote",
+    "Blood Spear",
+    "Bloodwell Vial",
+    "Boomerang +1",
+    "Boots of Elvenkind - Wondrous - 2.500 gp",
+    "Boots of Striding and Springing - Wondrous - 5.000 gp",
+    "Boots of the Winterlands - Wondrous - 10.000 gp",
+    "Bottle Breath",
+    "Bracers of Archery - Wondrous - 1.500 gp",
+    "Brooch of Living Essence",
+    "Brooch of Shielding - Wondrous - 7.500 gp",
+    "Broom of Flying - Wondrous - 8.000 gp",
+    "Cap of Water Breathing - Wondrous - 1.000 gp",
+    "Circlet of Blasting - Wondrous - 1.500 gp",
+    "Circlet of Human Perfection",
+    "Cloak of Elvenkind - Wondrous - 5.000 gp",
+    "Cloak of Protection - Wondrous - 3.500 gp",
+    "Cloak of the Manta Ray - Wondrous - 6.000 gp",
+    "Coiling Grasp Tattoo",
+    "Cracked Driftglobe",
+    "Crown of the Forest",
+    "Cursed Luckstone",
+    "Dagger of Warning - Weapon - 60.100 gp",
+    "Decanter of Endless Water - Wondrous - 135.000 gp",
+    "Deck of Illusions - Wondrous - 6.120 gp",
+    "Dragon Vessel",
+    "Dragon's Wrath Weapon",
+    "Dragonhide Belt",
+    "Dragon-Touched Focus",
+    "Driftglobe - Wondrous - 750 gp",
+    "Dust of Corrosion",
+    "Dust of Deliciousness",
+    "Dust of Disappearance - Wondrous - 300 gp",
+    "Dust of Dryness (1 pellet) - Wondrous - 120 gp",
+    "Dust of Sneezing and Choking - Wondrous - 480 gp",
+    "Earworm",
+    "Efficient Quiver",
+    "Elder Cartographer's Glossography",
+    "Eldritch Claw Tattoo",
+    "Elemental Gem - Wondrous - 950 gp",
+    "Emerald Pen",
+    "Eversmoking Bottle - Wondrous - 1.000 gp",
+    "Eyes of Charming - Wondrous - 3.000 gp",
+    "Eyes of Minute Seeing - Wondrous - 2.500 gp",
+    "Eyes of the Eagle - Wondrous - 2.500 gp",
+    "Feywild Shard",
+    "Figurine of Wondrous Power",
+    "Finder's Goggles",
+    "Gauntlets of Ogre Power - Wondrous - 8.000 gp",
+    "Gem of Brightness",
+    "Gloves of Missile Snaring - Wondrous - 3.000 gp",
+    "Gloves of Swimming and Climbing - Wondrous - 2.000 gp",
+    "Gloves of Thievery - Wondrous - 5.000 gp",
+    "Greatsword +1 - Weapon - 1.050 gp",
+    "Greatsword of Warning - Weapon - 60.100 gp",
+    "Greatclub of Warning - Weapon - 60.000 gp",
+    "Goggles of Night - Wondrous - 1.500 gp",
+    "Goggles of Object Reading",
+    "Guardian Emblem",
+    "Guild Keyrune",
+    "Guild Signet",
+    "Harkon's Bite",
+    "Hat of Disguise",
+    "Headband of Intellect - Wondrous - 8.000 gp",
+    "Hellfire Weapon",
+    "Helm of Comprehend Languages - Wondrous - 500 gp",
+    "Helm of Telepathy - Wondrous - 12.000 gp",
+    "Helm of Underwater Action",
+    "Hew",
+    "Immovable Rod - Rod - 5.000 gp",
+    "Infernal Puzzle Box",
+    "Inquisitive's Goggles",
+    "Insignia of Claws",
+    "Instrument of the Bards - Mac-Fuirmidh Cittern - Wondrous - 27.000 gp",
+    "Instrument of the Bards - Fochlucan Bandore - Wondrous - 26.500 gp",
+    "Instrument of the Bards - Doss Lute - Wondrous - 28.500 gp",
+    "Javelin of Lightning - Weapon - 1.500 gp",
+    "Keoghtom's Ointment (per dose) - Wondrous - 120 gp",
+    "Lantern of Revealing - Wondrous - 5.000 gp",
+    "+1 Lance - Weapon - 1.010 gp",
+    "Lightbringer",
+    "Light Hammer of Warning - Weapon - 60.100 gp",
+    "Living Gloves",
+    "Lorehold Primer",
+    "Mace +1 - Weapon - 1.010 gp",
+    "Mariner's Chain shirt - Armor - 1.550 gp",
+    "Mask of the Beast",
+    "Medallion of Thoughts - Wondrous - 3.000 gp",
+    "Mind Carapace Armor",
+    "Mithral Chain shirt - Armor - 850 gp",
+    "Mithral Scale mail - Armor - 850 gp",
+    "Mizzium Apparatus",
+    "Moon Sickle",
+    "Mummy Rot Antidote",
+    "Nature's Mantle",
+    "Necklace of Adaption - Wondrous - 1.500 gp",
+    "Night Caller",
+    "Oil of Slipperiness",
+    "Orc Stone",
+    "Paper Bird",
+    "Pearl of Power - Wondrous - 6.000 gp",
+    "Periapt of Health - Wondrous - 5.000 gp",
+    "Periapt of Wound Closure - Wondrous - 5.000 gp",
+    "Philter of Love - Wondrous - 90 gp",
+    "Pipes of Haunting - Wondrous - 6.000 gp",
+    "Pipes of the Sewers - Wondrous - 2.000 gp",
+    "Piwafwi (Cloak of Elvenkind)",
+    "Pixie Dust",
+    "Potion of Advantage",
+    "Potion of Animal Friendship - Potion - 200 gp",
+    "Potion of Fire Breath - Potion - 150 gp",
+    "Potion of Giant Strength",
+    "Potion of Growth - Potion - 270 gp",
+    "Potion of Healing - Potion - 50 gp",
+    "Potion of Poison - Potion - 100 gp",
+    "Potion of Resistance against Cold - Potion - 300 gp",
+    "Potion of Water Breathing - Potion - 180 gp",
+    "Prismari Primer",
+    "Propeller Helm",
+    "Psi Crystal",
+    "Pyroconverger",
+    "Quandrix Primer",
+    "Quiver of Ehlonna - Wondrous - 1.000 gp",
+    "Restorative Ointment",
+    "Rhythm-Maker's Drum",
+    "Ring of Jumping - Ring - 2.500 gp",
+    "Ring of Mind Shielding - Ring - 16.000 gp",
+    "Ring of Obscuring",
+    "Ring of Swimming - Ring - 3.000 gp",
+    "Ring of Truth Telling",
+    "Ring of Warmth - Ring - 1.000 gp",
+    "Ring of Water Walking - Ring - 1.500 gp",
+    "Rings of Shared Suffering",
+    "Robe os Serpents",
+    "Robe of Useful Items (13 special patches) - Wondrous - 13.200 gp",
+    "Rod of Retribution",
+    "Rod of the Pact Keeper",
+    "Rope of Climbing - Wondrous - 2.000 gp",
+    "Saddle of the Cavalier - Wondrous - 2.000 gp",
+    "Scaled Ornament",
+    "Seeker Dart",
+    "Sending Stones - Wondrous - 2.000 gp",
+    "Sentinel Shield - Armor - 20.000 gp",
+    "Serpent Scale Armor",
+    "Scroll of Crusader’s Mantle - Scroll - 400 gp",
+    "Scroll of Hunger of Hadar - Scroll - 400 gp",
+    "Scroll of Hypnotic Pattern - Scroll - 400 gp",
+    "Scroll of Scorching Ray - Scroll - 240 gp",
+    "Scroll of Spike Growth - Scroll - 240 gp",
+    "Scroll of Catnap - Scroll - 400 gp",
+    "Scroll of Conjure Animals - Scroll - 400 gp",
+    "Scroll of Haste - Scroll - 400 gp",
+    "Scroll of Branding Smite - Scroll - 240 gp",
+    "Scroll of Meld into Stone - Scroll - 400 gp",
+    "Scroll of Nondetection - Scroll - 400 gp",
+    "Scroll of Bestow Curse - Scroll - 400 gp",
+    "Scroll of Prayer of Healing - Scroll - 240 gp",
+    "Scroll of Sending - Scroll - 400 gp",
+    "Shatterspike",
+    "+1 Shield - Armor - 1.500 gp",
+    "Shortsword +1 - Weapon - 1.010 gp",
+    "Shortsword of Warning - Weapon - 60.100 gp",
+    "Silverquill Primer",
+    "Skyblinder Staff",
+    "Sling of Warning - Weapon - 60.000 gp",
+    "Slippers of Spider Climbing - Wondrous - 5.000 gp",
+    "Smokepowder",
+    "Soul Coin",
+    "Spear +1 - Weapon - 1.010 gp",
+    "Spear of Warning - Weapon - 60.100 gp",
+    "Spell Gem (Lapis Lazuli)",
+    "Spell Gem (Obsidian)",
+    "Spellwrought Tattoo",
+    "Spies' Murmur",
+    "Staff of the Adder - Staff - 1.800 gp",
+    "Staff of the Python - Staff - 2.000 gp",
+    "Luckstone - Wondrous - 4.200 gp",
+    "Stone of ill luck",
+    "Storm Boomerang",
+    "Sword of Vengeance",
+    "Thessaltoxin Antidote",
+    "Travel Alchemical Kit",
+    "Trident +1 - Weapon - 1.010 gp",
+    "Trident of Fish Command - Wondrous - 800 gp",
+    "Uncommon Glamerweave",
+    "Wand of Entangle",
+    "Wand of Magic Detection - Wand - 1.500 gp",
+    "Wand of Magic Missiles - Wand - 8.000 gp",
+    "Wand of Secrets - Wand - 1.500 gp",
+    "Wand of the War Mage +1 - Wand - 1.200 gp",
+    "Wand of Web - Wand - 8.000 gp",
+    "Weapon of Warning",
+    "Wheel of Wind and Water",
+    "Wildspace Orrery",
+    "Wand of the War Mage +1 - Wand - 1.200 gp",
+    "Winged Boots - Wondrous - 8.000 gp",
+    "Wingwear",
+    "Winter's Dark Bite",
+    "Whiterbloom Primer",
+    "Yklwa +1"
 ]
 
 rare_items = [
@@ -414,6 +615,7 @@ store_types = {
     "Loja de pequena cidade": (0, 0, 1, 10, 2, 8, 1, 4, 0, 1, 0, 1),
     "Loja de Grande Cidade": (0, 0, 3, 10, 5, 10, 3, 10, 0, 2, 0, 1),
     "Loja Geral": (10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+    "Potion Store": (0, 0, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10)  # Adicionando a Potion Store aqui.
 }
 
 for store_name, ranges in store_types.items():
@@ -421,28 +623,42 @@ for store_name, ranges in store_types.items():
 
 conn.close()
 
-# Interface gráfica
+
 # Interface gráfica
 app = tk.Tk()
 app.title("Loja de Itens Mágicos D&D 5e")
 
-store_types_combobox = ttk.Combobox(app, values=list(store_types.keys()))
-store_types_combobox.grid(column=0, row=0)
+# Configurar colunas e linhas para expandir
+app.grid_rowconfigure(0, weight=0)  # Não permita que a linha 0 (botões) expanda
+app.grid_rowconfigure(1, weight=1)  # Permita que a linha 1 (texto e scrollbar) expanda
+for i in range(2):
+    app.grid_columnconfigure(i, weight=1)
 
-text_area = tk.Text(app, font=("JMH Typewriter", 12))
-text_area.grid(column=0, row=1)
+store_types_combobox = ttk.Combobox(app, values=list(store_types.keys()))
+store_types_combobox.grid(column=0, row=0, sticky="new")
+
+scrollbar = tk.Scrollbar(app)  # Crie a barra de rolagem
+scrollbar.grid(column=2, row=1, sticky="nsw")
+
+text_area = tk.Text(app, font=("JMH Typewriter", 12), yscrollcommand=scrollbar.set)  # Configure o comando de rolagem
+text_area.grid(column=0, row=1, sticky="nsew", columnspan=2)
+
+scrollbar.config(command=text_area.yview)  # Configure o comando de visualização da barra de rolagem
+
+# Definir a tag 'bold'
+text_area.tag_configure('bold', font=("JMH Typewriter", 12, 'bold'))
 
 def show_inventory():
     inventory = generate_inventory(store_types_combobox.get())
     text_area.delete('1.0', tk.END)  # limpar o conteúdo existente
     for category, items in inventory.items():
-        text_area.insert(tk.END, f"{category.capitalize()} Items:\n")
+        start_index = text_area.index(tk.END)  # pegar o índice de início antes de inserir o texto
+        text_area.insert(tk.END, f"{category.capitalize()} Items:\n", 'bold')  # aplicar a tag 'bold'
         for _, item_name in items:
             text_area.insert(tk.END, f"{item_name}\n")
         text_area.insert(tk.END, "\n")
 
 generate_button = tk.Button(app, text="Gerar Inventário", command=show_inventory)
-generate_button.grid(column=1, row=0)
+generate_button.grid(column=1, row=0, sticky="new")
 
 app.mainloop()
-
