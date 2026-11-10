@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-10
+
+- Reject ambiguous duplicate JSON fields and non-integer catalogue schema versions.
+- Report malformed Unicode, nonstandard numbers and excessive nesting as catalogue errors.
+
 ## 2026-10-30
 
 - Stop inserting duplicate catalogue rows at startup.

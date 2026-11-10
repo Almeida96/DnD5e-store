@@ -62,6 +62,33 @@ class ShopTests(unittest.TestCase):
         result = generate_inventory("town")
         self.assertEqual(result, generate_inventory("town", result["seed"]))
 
+    def test_ambiguous_or_nonstandard_json_is_rejected(self):
+        categories = json.dumps({key: [] for key in RARITIES})
+        invalid = [
+            '{"schema_version":true,"categories":' + categories + '}',
+            '{"schema_version":1.0,"categories":' + categories + '}',
+            '{"schema_version":1,"schema_version":1,"categories":' + categories + '}',
+            '{"schema_version":1,"categories":' + categories + ',"extra":NaN}',
+            '{"schema_version":1,"categories":{"mundane":[],"mundane":[]}}',
+            '[' * 2000 + '0' + ']' * 2000,
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "invalid.json"
+            for document in invalid:
+                with self.subTest(document=document[:100]):
+                    path.write_text(document, encoding="utf-8")
+                    with self.assertRaises(ValueError):
+                        load_catalog(path)
+
+    def test_unpaired_surrogate_name_is_rejected_before_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "invalid.json"
+            categories = {key: [] for key in RARITIES}
+            categories["mundane"] = ["broken\ud800name"]
+            path.write_text(json.dumps({"schema_version": 1, "categories": categories}))
+            with self.assertRaises(ValueError):
+                load_catalog(path)
+
     def test_cli_works_outside_repository_and_import_is_safe(self):
         script = Path("shop.py").resolve()
         with tempfile.TemporaryDirectory() as directory:

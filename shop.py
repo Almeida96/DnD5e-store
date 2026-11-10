@@ -18,14 +18,38 @@ PROFILES = {
 }
 
 
+def unique_object(pairs):
+    result = {}
+    for name, value in pairs:
+        if name in result:
+            raise ValueError(f"Duplicate catalogue field: {name}.")
+        result[name] = value
+    return result
+
+
+def reject_constant(value):
+    raise ValueError(f"Invalid JSON value: {value}.")
+
+
 def load_catalog(path=None):
     path = Path(path) if path else Path(__file__).with_name("catalog.json")
     with path.open("rb") as stream:
         raw = stream.read(1024 * 1024 + 1)
     if len(raw) > 1024 * 1024:
         raise ValueError("Catalog exceeds 1 MiB.")
-    data = json.loads(raw.decode("utf-8-sig"))
-    if not isinstance(data, dict) or data.get("schema_version") != 1:
+    try:
+        data = json.loads(
+            raw.decode("utf-8-sig"),
+            object_pairs_hook=unique_object,
+            parse_constant=reject_constant,
+        )
+    except RecursionError as error:
+        raise ValueError("Catalogue nesting is too deep.") from error
+    if (
+        not isinstance(data, dict)
+        or type(data.get("schema_version")) is not int
+        or data["schema_version"] != 1
+    ):
         raise ValueError("Catalog schema_version must be 1.")
     categories = data.get("categories")
     if not isinstance(categories, dict) or set(categories) != set(RARITIES):
@@ -40,7 +64,7 @@ def load_catalog(path=None):
             not isinstance(name, str)
             or not name.strip()
             or len(name) > 200
-            or any(ord(c) < 32 for c in name)
+            or not name.isprintable()
             for name in items
         ):
             raise ValueError(

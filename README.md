@@ -30,7 +30,7 @@ Edit a copy of [catalog.json](catalog.json), then run:
 python shop.py village --seed 42 --catalog campaign-catalog.json
 ```
 
-The file needs `schema_version: 1` and a `categories` object containing all six categories. Each category is a list of names. Repeated names are deduplicated before selection; empty categories are allowed. Files are limited to 1 MiB and each category to 5,000 names.
+The file needs integer `schema_version: 1` and a `categories` object containing all six categories. Each category is a list of printable names. Repeated names are deduplicated before selection; empty categories are allowed. Files are limited to 1 MiB and each category to 5,000 names. Duplicate JSON fields, nonstandard numeric values and invalid Unicode names are rejected rather than silently selecting one interpretation.
 
 ## Changes from the original script
 
